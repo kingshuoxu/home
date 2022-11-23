@@ -54,15 +54,17 @@
     <link href="https://jingtianer.github.io/home/2022/11/22/%E7%BB%84%E4%BC%9A/Fabric%E5%87%86%E5%85%A5/"/>
     <id>https://jingtianer.github.io/home/2022/11/22/%E7%BB%84%E4%BC%9A/Fabric%E5%87%86%E5%85%A5/</id>
     <published>2022-11-22T04:15:37.000Z</published>
-    <updated>2022-11-22T07:18:23.085Z</updated>
+    <updated>2022-11-22T07:55:26.015Z</updated>
     
-    <content type="html"><![CDATA[<h2 id="fabric-ca"><a href="#fabric-ca" class="headerlink" title="fabric ca"></a>fabric ca</h2><ul><li><a href="https://hyperledger-fabric-ca.readthedocs.io/en/latest/deployguide/cadeploy.html">官方教程</a></li></ul><h3 id="人工审查"><a href="#人工审查" class="headerlink" title="人工审查"></a>人工审查</h3>]]></content>
+    <content type="html"><![CDATA[<h2 id="fabric-ca"><a class="markdownIt-Anchor" href="#fabric-ca"></a> fabric ca</h2><ul><li><p><a href="https://hyperledger-fabric-ca.readthedocs.io/en/latest/deployguide/cadeploy.html">官方教程</a></p></li><li><p>如果使用fabric的准入，用户需要</p></li></ul>]]></content>
     
     
       
       
-    <summary type="html">&lt;h2 id=&quot;fabric-ca&quot;&gt;&lt;a href=&quot;#fabric-ca&quot; class=&quot;headerlink&quot; title=&quot;fabric ca&quot;&gt;&lt;/a&gt;fabric ca&lt;/h2&gt;&lt;ul&gt;
-&lt;li&gt;&lt;a href=&quot;https://hyperledger-fabric-</summary>
+    <summary type="html">&lt;h2 id=&quot;fabric-ca&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#fabric-ca&quot;&gt;&lt;/a&gt; fabric ca&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&quot;https://hyperledger-fabric-ca.re</summary>
       
     
     
