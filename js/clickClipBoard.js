@@ -23,7 +23,7 @@ $(document).ready(function() {
             var url = document.baseURI + "atom.xml"
             buttons[i].href = "javascript:;"
             buttons[i].target = "_self"
-            buttons[i].setAttribute('onclick', "copyToClipboard(\"" + url + "\", function() { alert(\"copied to clipboard\") })")
+            buttons[i].setAttribute('onclick', "copyToClipboard(\"" + url + "\", function() { alert(\"Copied to clipboard!\") })")
             break
         }
     }
