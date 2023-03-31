@@ -28,11 +28,41 @@
       switchTab();
       window.addEventListener('hashchange', switchTab, false);
   })();
-  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/home/">Meow!!</a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item is-active" href="/home/">主页</a><a class="navbar-item" href="/home/archives">归档</a><a class="navbar-item" href="/home/categories">分类</a><a class="navbar-item" href="/home/tags">标签</a><a class="navbar-item" href="/home/about">关于我</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/"><i class="fab fa-github"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-8-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2023-03-28T04:15:37.000Z" title="3/28/2023, 12:15:37 PM">2023-03-28</time>发表</span><span class="level-item"><time dateTime="2023-03-28T11:29:18.556Z" title="3/28/2023, 7:29:18 PM">2023-03-28</time>更新</span><span class="level-item"><a class="link-muted" href="/home/categories/%E7%BB%84%E4%BC%9A/">组会</a></span><span class="level-item">8 分钟读完 (大约1274个字)</span></div></div><h1 class="title is-3 is-size-4-mobile"><a class="link-muted" href="/home/2023/03/28/%E7%BB%84%E4%BC%9A/%E7%AC%AC12%E5%91%A8%E8%AE%B0%E5%BD%95/">第12周记录</a></h1><div class="content"><h2 id="fuzz-c的debug"><a href="#fuzz-c的debug" class="headerlink" title="fuzz.c的debug"></a>fuzz.c的debug</h2><h3 id="错误使用的环境变量"><a href="#错误使用的环境变量" class="headerlink" title="错误使用的环境变量"></a>错误使用的环境变量</h3><p>在named的main函数中，如果检测到<code>named_g_fuzz_type</code>不是<code>isc_fuzz_none</code>，即本次运行是要进行fuzz的，将会调用函数<code>named_fuzz_setup</code>。这个函数的作用是创建一个线程，根据fuzz任务的类型，指定一个函数<code>fn</code>，即该线程执行的函数。但是启动线程的条件是获取环境变量，需要环境中存在<code>__AFL_PERSISTENT</code>或<code>AFL_CMIN</code>。</p>
-<p>问题是<code>__AFL_PERSISTENT</code>是用户手动强制开启persistent模式的，我们在fuzz named之前需要手动添加环境这个环境变量</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> __AFL_PERSISTENT=FU_NAMED</span><br></pre></td></tr></table></figure>
-
-<h3 id="未正确使用-AFL-LOOP"><a href="#未正确使用-AFL-LOOP" class="headerlink" title="未正确使用__AFL_LOOP()"></a>未正确使用__AFL_LOOP()</h3></div><a class="article-more button is-small is-size-7" href="/home/2023/03/28/%E7%BB%84%E4%BC%9A/%E7%AC%AC12%E5%91%A8%E8%AE%B0%E5%BD%95/#more">阅读更多</a></article></div><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2023-03-25T10:05:00.000Z" title="3/25/2023, 6:05:00 PM">2023-03-25</time>发表</span><span class="level-item"><time dateTime="2023-03-25T09:47:49.062Z" title="3/25/2023, 5:47:49 PM">2023-03-25</time>更新</span><span class="level-item"><a class="link-muted" href="/home/categories/linux/">linux</a></span><span class="level-item">3 分钟读完 (大约510个字)</span></div></div><h1 class="title is-3 is-size-4-mobile"><a class="link-muted" href="/home/2023/03/25/linux/Linux-UNIX%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C/cha6/">cha6.进程</a></h1><div class="content"><h2 id="练习1"><a href="#练习1" class="headerlink" title="练习1"></a>练习1</h2><blockquote>
+  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/home/">Meow!!</a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item is-active" href="/home/">主页</a><a class="navbar-item" href="/home/archives">归档</a><a class="navbar-item" href="/home/categories">分类</a><a class="navbar-item" href="/home/tags">标签</a><a class="navbar-item" href="/home/about">关于我</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/"><i class="fab fa-github"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-8-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2023-03-28T04:15:37.000Z" title="3/28/2023, 12:15:37 PM">2023-03-28</time>发表</span><span class="level-item"><time dateTime="2023-03-31T02:04:41.452Z" title="3/31/2023, 10:04:41 AM">2023-03-31</time>更新</span><span class="level-item"><a class="link-muted" href="/home/categories/%E7%BB%84%E4%BC%9A/">组会</a></span><span class="level-item">17 分钟读完 (大约2518个字)</span></div></div><h1 class="title is-3 is-size-4-mobile"><a class="link-muted" href="/home/2023/03/28/%E7%BB%84%E4%BC%9A/%E7%AC%AC12%E5%91%A8%E8%AE%B0%E5%BD%95/">第12周记录</a></h1><div class="content"><h2 id="aflgo参数添加"><a href="#aflgo参数添加" class="headerlink" title="aflgo参数添加"></a>aflgo参数添加</h2><h3 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h3><p>aflgo使用的编译器是<code>afl-clang-fast</code>和<code>afl-clang-fast++</code>，代码文件位于<code>aflgo/llvm_mode</code>，该文件夹下共有三个文件</p>
+<table>
+<thead>
+<tr>
+<th>文件名</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>afl-clang-fast.c</td>
+<td>包含main(), 程序入口，编辑输入参数，根据环境变量编辑参数。afl-clang的一层壳，处理好参数后调用afl-clang[++]*, 加载afl-llvm-pass.so</td>
+</tr>
+<tr>
+<td>afl-llvm-pass.so.cc</td>
+<td>在aflgo预处理模式下，读取cfg，生成计算distance所需的几个文件，在aflgo插装模式下，根据gen_distance.py生成的距离文件，进行插桩</td>
+</tr>
+<tr>
+<td>afl-llvm-rt.o.c</td>
+<td>afl的一个库，防止用户没有安装afl</td>
+</tr>
+</tbody></table>
+<h3 id="参数定义"><a href="#参数定义" class="headerlink" title="参数定义"></a>参数定义</h3><ul>
+<li>-result_type, 效果类型，可选参数值有:<ul>
+<li>dns_disturbance, dns扰乱。另需传入三个参数:<ul>
+<li>-vulnerable, 易受攻击的函数集合（文件绝对路径）</li>
+<li>-sink, sink函数集合（文件绝对路径），各种recv</li>
+<li>-source, source函数集合（文件绝对路径），各种send</li>
+<li>-blocking, 阻塞函数集合（文件绝对路径）（这里以后可以细化，有些函数是根据flag阻塞的，对于每条指令，拿到函数名后分析其参数判断是否真的阻塞）</li>
+</ul>
+</li>
+<li>privilege_escalation, 主机提权</li>
+<li>dns_recored_falsify, dns记录篡改</li>
+</ul>
+</li>
+</ul></div><a class="article-more button is-small is-size-7" href="/home/2023/03/28/%E7%BB%84%E4%BC%9A/%E7%AC%AC12%E5%91%A8%E8%AE%B0%E5%BD%95/#more">阅读更多</a></article></div><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2023-03-25T10:05:00.000Z" title="3/25/2023, 6:05:00 PM">2023-03-25</time>发表</span><span class="level-item"><time dateTime="2023-03-25T09:47:49.062Z" title="3/25/2023, 5:47:49 PM">2023-03-25</time>更新</span><span class="level-item"><a class="link-muted" href="/home/categories/linux/">linux</a></span><span class="level-item">3 分钟读完 (大约510个字)</span></div></div><h1 class="title is-3 is-size-4-mobile"><a class="link-muted" href="/home/2023/03/25/linux/Linux-UNIX%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C/cha6/">cha6.进程</a></h1><div class="content"><h2 id="练习1"><a href="#练习1" class="headerlink" title="练习1"></a>练习1</h2><blockquote>
 <p>编译程序清单6-1中的程序(mem_segments.c)，使用1s-l命令显示可执行文件的大小。虽然该程序包含一个大约10MB的数组，但可执行文件大小要远小于此,为什么?</p>
 </blockquote>
 <ul>
