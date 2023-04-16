@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>crash分析&amp;调用栈 - Jingtianer</title><link rel="manifest" href="/home/manifest.json"><meta name="application-name" content="Jingtianer"><meta name="msapplication-TileImage" content="/img/favicon.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Jingtianer"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="挖掘情况   版本 软件    bind9_15_0 named   dns_rdata_fromwire_text的crash分析 这个是fuzz文件夹下挖出的crash，没什么参考价值，先用这个摸索一下分析方法     版本 软件    bind9_16_0 dns_rdata_fromwire_text   main.c的代码结构"><meta property="og:type" content="blog"><meta property="og:title" content="crash分析&amp;调用栈"><meta property="og:url" content="https://jingtianer.github.io/home/2023/04/11/%E7%BB%84%E4%BC%9A/%E5%8D%81%E5%9B%9B%E5%91%A8crash%E5%88%86%E6%9E%90&amp;%E8%B0%83%E7%94%A8%E6%A0%88/"><meta property="og:site_name" content="Jingtianer"><meta property="og:description" content="挖掘情况   版本 软件    bind9_15_0 named   dns_rdata_fromwire_text的crash分析 这个是fuzz文件夹下挖出的crash，没什么参考价值，先用这个摸索一下分析方法     版本 软件    bind9_16_0 dns_rdata_fromwire_text   main.c的代码结构"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://jingtianer.github.io/home/img/og_image.png"><meta property="article:published_time" content="2023-04-11T04:15:37.000Z"><meta property="article:modified_time" content="2023-04-16T14:41:30.848Z"><meta property="article:author" content="Meow Meow Liu"><meta property="article:tag" content="组会"><meta property="twitter:card" content="summary"><meta property="twitter:image:src" content="https://jingtianer.github.io/home/img/og_image.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://jingtianer.github.io/home/2023/04/11/%E7%BB%84%E4%BC%9A/%E5%8D%81%E5%9B%9B%E5%91%A8crash%E5%88%86%E6%9E%90&%E8%B0%83%E7%94%A8%E6%A0%88/"},"headline":"crash分析&调用栈","image":["https://jingtianer.github.io/home/img/og_image.png"],"datePublished":"2023-04-11T04:15:37.000Z","dateModified":"2023-04-16T14:41:30.848Z","author":{"@type":"Person","name":"Meow Meow Liu"},"publisher":{"@type":"Organization","name":"Jingtianer","logo":{"@type":"ImageObject","url":{"text":"Meow!!"}}},"description":"挖掘情况   版本 软件    bind9_15_0 named   dns_rdata_fromwire_text的crash分析 这个是fuzz文件夹下挖出的crash，没什么参考价值，先用这个摸索一下分析方法     版本 软件    bind9_16_0 dns_rdata_fromwire_text   main.c的代码结构"}</script><link rel="canonical" href="https://jingtianer.github.io/home/2023/04/11/%E7%BB%84%E4%BC%9A/%E5%8D%81%E5%9B%9B%E5%91%A8crash%E5%88%86%E6%9E%90&amp;%E8%B0%83%E7%94%A8%E6%A0%88/"><link rel="alternate" href="/home/atom.xml" title="Jingtianer" type="application/atom+xml"><link rel="icon" href="/home/img/favicon.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.0.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/vs.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/home/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><!--!--><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><!-- hexo injector head_end start --><script>
+  (function () {
+      function switchTab() {
+          if (!location.hash) {
+            return;
+          }
+
+          const $tabMenu = document.querySelector(`a[href="${location.hash}"]`);
+          if (!$tabMenu) {
+            return;
+          }
+
+          const $tabMenuContainer = $tabMenu.parentElement.parentElement;
+          Array.from($tabMenuContainer.children).forEach($menu => $menu.classList.remove('is-active'));
+          Array.from($tabMenuContainer.querySelectorAll('a'))
+              .map($menu => document.getElementById($menu.getAttribute("href").substring(1)))
+              .forEach($content => $content.classList.add('is-hidden'));
+
+          if ($tabMenu) {
+              $tabMenu.parentElement.classList.add('is-active');
+          }
+          const $activeTab = document.querySelector(location.hash);
+          if ($activeTab) {
+              $activeTab.classList.remove('is-hidden');
+          }
+      }
+      switchTab();
+      window.addEventListener('hashchange', switchTab, false);
+  })();
+  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/home/">Meow!!</a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/home/">主页</a><a class="navbar-item" href="/home/archives">归档</a><a class="navbar-item" href="/home/categories">分类</a><a class="navbar-item" href="/home/tags">标签</a><a class="navbar-item" href="/home/about">关于我</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-8-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2023-04-11T04:15:37.000Z" title="4/11/2023, 12:15:37 PM">2023-04-11</time>发表</span><span class="level-item"><time dateTime="2023-04-16T14:41:30.848Z" title="4/16/2023, 10:41:30 PM">2023-04-16</time>更新</span><span class="level-item"><a class="link-muted" href="/home/categories/%E7%BB%84%E4%BC%9A/">组会</a></span><span class="level-item">8 分钟读完 (大约1231个字)</span></div></div><h1 class="title is-3 is-size-4-mobile">crash分析&amp;调用栈</h1><div class="content"><h2 id="挖掘情况"><a href="#挖掘情况" class="headerlink" title="挖掘情况"></a>挖掘情况</h2><table>
+<thead>
+<tr>
+<th>版本</th>
+<th>软件</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>bind9_15_0</td>
+<td>named</td>
+</tr>
+</tbody></table>
+<h2 id="dns-rdata-fromwire-text的crash分析"><a href="#dns-rdata-fromwire-text的crash分析" class="headerlink" title="dns_rdata_fromwire_text的crash分析"></a>dns_rdata_fromwire_text的crash分析</h2><ul>
+<li>这个是fuzz文件夹下挖出的crash，没什么参考价值，先用这个摸索一下分析方法</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>版本</th>
+<th>软件</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>bind9_16_0</td>
+<td>dns_rdata_fromwire_text</td>
+</tr>
+</tbody></table>
+<h3 id="main-c的代码结构"><a href="#main-c的代码结构" class="headerlink" title="main.c的代码结构"></a>main.c的代码结构</h3><p>main.c中包含三个函数</p>
+<ul>
+<li>test_all_from，传入一个目录，读取目录下所有文件作为测试用例，每读取一个，调用<code>LLVMFuzzerTestOneInput</code>进行测试</li>
+<li>main(没有启用AFL时)，将目录初始化为<code>fuzz</code>文件夹的绝对路径，调用<code>test_all_from</code></li>
+<li>main(启用AFL时)，从<code>stdin</code>中读取一个测试用例，每读取一个，调用<code>LLVMFuzzerTestOneInput</code>进行测试</li>
+</ul>
+<h4 id="编译参数"><a href="#编译参数" class="headerlink" title="编译参数"></a>编译参数</h4><ul>
+<li><p>不使用AFL，加<code>-g</code>和<code>address</code>，检测内存问题的sanitizer</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">export CC=clang</span><br><span class="line">export CXX=clang++</span><br><span class="line"></span><br><span class="line">export CFLAGS=&quot;-g -fsanitize=address -fno-omit-frame-pointer -O1&quot;</span><br><span class="line">export CXXFLAGS=&quot;-g -fsanitize=address -fno-omit-frame-pointer -O1&quot;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">build <span class="keyword">for</span> gdb</span></span><br><span class="line">pushd $SUBJECT</span><br><span class="line">  make clean</span><br><span class="line">  ./configure --enable-fuzz=afl</span><br><span class="line">  make</span><br><span class="line">  pushd fuzz</span><br><span class="line">    make</span><br><span class="line">  popd</span><br><span class="line">popd</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>由于crashwalk本质上也是gdb，crashwalk会模仿afl的输入输出方式，所以这里编译时依旧添加afl选项，将<code>AFL_LOOP</code>编译至代码中</p>
+</li>
+</ul>
+<h3 id="直接运行"><a href="#直接运行" class="headerlink" title="直接运行"></a>直接运行</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">for dir in `ls ../out`; do</span><br><span class="line">    if [ -d &quot;../out/$dir/crashes&quot; ]; then</span><br><span class="line">        ls ../out/$dir/crashes</span><br><span class="line">        for file in `ls ../out/$dir/crashes`; do</span><br><span class="line">            echo Input = $PWD/../out/$dir/crashes/$file</span><br><span class="line">            $SUBJECT/fuzz/dns_rdata_fromwire_text &lt; $PWD/../out/$dir/crashes/$file</span><br><span class="line">        done</span><br><span class="line">    else</span><br><span class="line">        echo omit, $dir is not a directory or no crashes under $dir</span><br><span class="line">    fi</span><br><span class="line">done</span><br><span class="line"></span><br><span class="line">(./gdb.sh 2&gt;&amp;1 1&gt;/dev/null) | grep Aborted -B 1 | sort | uniq # 读取标准错误流中的Abort，排序去重</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">dns_rdata_fromwire_text: dns_rdata_fromwire_text.c:138: int LLVMFuzzerTestOneInput(const uint8_t *, size_t): Assertion `result == ISC_R_SUCCESS&#x27; failed.</span><br><span class="line">dns_rdata_fromwire_text: dns_rdata_fromwire_text.c:150: int LLVMFuzzerTestOneInput(const uint8_t *, size_t): Assertion `result == ISC_R_SUCCESS&#x27; failed.</span><br><span class="line">dns_rdata_fromwire_text: dns_rdata_fromwire_text.c:151: int LLVMFuzzerTestOneInput(const uint8_t *, size_t): Assertion `rdata2.length == size&#x27; failed.</span><br><span class="line">dns_rdata_fromwire_text: dns_rdata_fromwire_text.c:161: int LLVMFuzzerTestOneInput(const uint8_t *, size_t): Assertion `result == ISC_R_SUCCESS&#x27; failed.</span><br></pre></td></tr></table></figure>
+
+<p>由于bind9报错的同时会答打印出出错的位置，经过排序去重，共有四处位置发送错误。这里因为是fuzz文件夹下的东西，没什么意义</p>
+<h3 id="crashwalk"><a href="#crashwalk" class="headerlink" title="crashwalk"></a>crashwalk</h3><ul>
+<li><p>使用crashwalk，先将所有crash读一遍</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">for dir in `ls ../out`; do</span><br><span class="line">    if [ -d &quot;../out/&quot;$dir&quot;/crashes&quot; ]; then</span><br><span class="line">        echo Crashwalk, reading crashes in $dir</span><br><span class="line">        cwtriage -root $AFL_CRASHES -afl &gt; $dir.crashwalk</span><br><span class="line">    else</span><br><span class="line">        echo omit, $dir is not a directory or no crashes under $dir</span><br><span class="line">    fi</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>提取其中的Stack Head</p>
+</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> *.crashwalk | grep <span class="string">&#x27;Stack Head&#x27;</span> -A 6 | <span class="built_in">tee</span> tmp.crashwalk <span class="comment"># -A 输出 grep 后6行</span></span><br><span class="line">Stack Head (6 entries):</span><br><span class="line">   __GI_raise                @ 0x00007ffff6887438: <span class="keyword">in</span> (BL)</span><br><span class="line">   __GI_abort                @ 0x00007ffff688903a: <span class="keyword">in</span> (BL)</span><br><span class="line">   __assert_fail_base        @ 0x00007ffff687fbe7: <span class="keyword">in</span> (BL)</span><br><span class="line">   __GI___assert_fail        @ 0x00007ffff687fc92: <span class="keyword">in</span> (BL)</span><br><span class="line">   LLVMFuzzerTestOneInput    @ 0x00000000005163f9: <span class="keyword">in</span> /home/ubuntu/dnsenv/aflgo-workdir/bind9-16-39/bind9/fuzz/dns_rdata_fromwire_text</span><br><span class="line">   main                      @ 0x00000000005167fe: <span class="keyword">in</span> /home/ubuntu/dnsenv/aflgo-workdir/bind9-16-39/bind9/fuzz/dns_rdata_fromwire_text</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="gdb"><a href="#gdb" class="headerlink" title="gdb"></a>gdb</h3><ul>
+<li>asan和gdb会冲突，编译时不要用asan</li>
+</ul>
+<h4 id="直接运行-1"><a href="#直接运行-1" class="headerlink" title="直接运行"></a>直接运行</h4><p>查看其函数调用栈，发现其输出与crashwalk相同，有更详细的具体代码文件，行号</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#0  0x00007ffff6887438 in __GI_raise (sig=sig@entry=6) at ../sysdeps/unix/sysv/linux/raise.c:54</span><br><span class="line">#1  0x00007ffff688903a in __GI_abort () at abort.c:89</span><br><span class="line">#2  0x00007ffff687fbe7 in __assert_fail_base (fmt=&lt;optimized out&gt;, assertion=assertion@entry=0x90b360 &lt;.str&gt; &quot;result == ISC_R_SUCCESS&quot;, file=file@entry=0x90b2c0 &lt;.str&gt; &quot;dns_rdata_fromwire_text.c&quot;, </span><br><span class="line">    line=line@entry=138, function=function@entry=0x90b300 &lt;__PRETTY_FUNCTION__.LLVMFuzzerTestOneInput&gt; &quot;int LLVMFuzzerTestOneInput(const uint8_t *, size_t)&quot;) at assert.c:92</span><br><span class="line">#3  0x00007ffff687fc92 in __GI___assert_fail (assertion=0x90b360 &lt;.str&gt; &quot;result == ISC_R_SUCCESS&quot;, file=0x90b2c0 &lt;.str&gt; &quot;dns_rdata_fromwire_text.c&quot;, line=138, </span><br><span class="line">    function=0x90b300 &lt;__PRETTY_FUNCTION__.LLVMFuzzerTestOneInput&gt; &quot;int LLVMFuzzerTestOneInput(const uint8_t *, size_t)&quot;) at assert.c:101</span><br><span class="line">#4  0x00000000005163f9 in LLVMFuzzerTestOneInput (</span><br><span class="line">    data=0x618000000082 &quot;art_time        : 1681477147\nlast_update       : 1681477267\nfuzzer_pid        : 7592\ncycles_done       : 0\nexecs_done        : 7074\nexecs_per_sec     : 58.58\npaths_total       : 100\npaths_favored     &quot;..., size=887) at dns_rdata_fromwire_text.c:138</span><br><span class="line">#5  0x0000000000516c53 in test_all_from (dirname=0x7fffffffca80 &quot;/home/ubuntu/dnsenv/aflgo-workdir/bind9-16-39/out&quot;) at main.c:69</span><br><span class="line">#6  0x00000000005167fe in main (argc=&lt;optimized out&gt;, argv=&lt;optimized out&gt;) at main.c:109</span><br></pre></td></tr></table></figure>
+
+<h4 id="查看所有调用栈"><a href="#查看所有调用栈" class="headerlink" title="查看所有调用栈"></a>查看所有调用栈</h4><p>使用非交互式执行gdb脚本，进入函数<code>dns_rdata_tofmttext</code>中查看调用栈</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> <span class="built_in">dir</span> <span class="keyword">in</span> `<span class="built_in">ls</span> ../out`; <span class="keyword">do</span></span><br><span class="line">    <span class="built_in">cat</span> /dev/null &gt; <span class="variable">$dir</span>.gdb</span><br><span class="line">    <span class="keyword">if</span> [ -d <span class="string">&quot;../out/<span class="variable">$dir</span>/crashes&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">        <span class="keyword">for</span> file <span class="keyword">in</span> `<span class="built_in">ls</span> ../out/<span class="variable">$dir</span>/crashes`; <span class="keyword">do</span></span><br><span class="line">          GDBSEQ=<span class="string">&quot;break 138;r &lt; ../out/<span class="variable">$dir</span>/crashes/<span class="variable">$file</span>;bt;q&quot;</span></span><br><span class="line">          <span class="built_in">echo</span> <span class="variable">$GDBSEQ</span> | awk <span class="string">&#x27;&#123;len=split($0,a,&quot;;&quot;);for(i=1;i&lt;=len;i++)print &quot;&quot;a[i] ;&#125;&#x27;</span> | <span class="built_in">tee</span> script.gdb</span><br><span class="line">          gdb -q --batch -x script.gdb <span class="variable">$SUBJECT</span>/fuzz/dns_rdata_fromwire_text &gt;&gt; <span class="variable">$dir</span>.gdb</span><br><span class="line">        <span class="keyword">done</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="built_in">echo</span> omit, <span class="variable">$dir</span> is not a directory or no crashes under <span class="variable">$dir</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>直接运行，在return0前打一个断点，循环读取所有crash，通过gdb脚本输入到程序中，运行，如果出错，会在出错的位置打印bt，否则不输出只有一个<code>main</code></li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Program received signal SIGABRT, Aborted.</span><br><span class="line">0x00007ffff6fae438 <span class="keyword">in</span> __GI_raise (sig=sig@entry=6) at ../sysdeps/unix/sysv/linux/raise.c:54</span><br><span class="line"><span class="comment">#0  0x00007ffff6fae438 in __GI_raise (sig=sig@entry=6) at ../sysdeps/unix/sysv/linux/raise.c:54</span></span><br><span class="line"><span class="comment">#1  0x00007ffff6fb003a in __GI_abort () at abort.c:89</span></span><br><span class="line"><span class="comment">#2  0x00007ffff6fa6be7 in __assert_fail_base (fmt=&lt;optimized out&gt;, assertion=assertion@entry=0x8392f7 &quot;result == ISC_R_SUCCESS&quot;, file=file@entry=0x8392a9 &quot;dns_rdata_fromwire_text.c&quot;, line=line@entry=138, function=function@entry=0x8392c3 &quot;int LLVMFuzzerTestOneInput(const uint8_t *, size_t)&quot;) at assert.c:92</span></span><br><span class="line"><span class="comment">#3  0x00007ffff6fa6c92 in __GI___assert_fail (assertion=0x8392f7 &quot;result == ISC_R_SUCCESS&quot;, file=0x8392a9 &quot;dns_rdata_fromwire_text.c&quot;, line=138, function=0x8392c3 &quot;int LLVMFuzzerTestOneInput(const uint8_t *, size_t)&quot;) at assert.c:101</span></span><br><span class="line"><span class="comment">#4  0x0000000000423524 in LLVMFuzzerTestOneInput (data=0x7ffffffedce2 &quot;&quot;, data@entry=0x7ffffffedce0 &quot;(&quot;, size=970, size@entry=972) at dns_rdata_fromwire_text.c:138</span></span><br><span class="line"><span class="comment">#5  0x0000000000423a20 in main (argc=&lt;optimized out&gt;, argv=&lt;optimized out&gt;) at main.c:136</span></span><br><span class="line">A debugging session is active.</span><br></pre></td></tr></table></figure></div><div class="article-licensing box"><div class="licensing-title"><p>crash分析&amp;调用栈</p><p><a href="https://jingtianer.github.io/home/2023/04/11/组会/十四周crash分析&amp;调用栈/">https://jingtianer.github.io/home/2023/04/11/组会/十四周crash分析&amp;调用栈/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>Meow Meow Liu</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2023-04-11</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2023-04-16</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/home/tags/%E7%BB%84%E4%BC%9A/">组会</a></div><!--!--></article></div><!--!--><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/home/2023/04/13/linux/Linux-UNIX%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C/cha9/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">cha9.进程凭证</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/home/2023/04/10/linux/Linux-UNIX%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C/cha8/"><span class="level-item">cha8.用户和组</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">评论</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "e3dbe31a1e25a5fd68b7ab174ef710c8",
+            repo: "blog_comment",
+            owner: "jingtianer",
+            clientID: "f0b13fe8021fcd2efe50",
+            clientSecret: "35207c14b34e77c48a3aeee1e94c9da169ffe0c2",
+            admin: ["jingtianer"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "zh-CN",
+        })
+        gitalk.render('comment-container')</script></div></div></div><!--!--><div class="column column-right is-4-tablet is-4-desktop is-4-widescreen  order-3 is-sticky"><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="level is-mobile" href="#挖掘情况"><span class="level-left"><span class="level-item">1</span><span class="level-item">挖掘情况</span></span></a></li><li><a class="level is-mobile" href="#dns-rdata-fromwire-text的crash分析"><span class="level-left"><span class="level-item">2</span><span class="level-item">dns_rdata_fromwire_text的crash分析</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#main-c的代码结构"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">main.c的代码结构</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#编译参数"><span class="level-left"><span class="level-item">2.1.1</span><span class="level-item">编译参数</span></span></a></li></ul></li><li><a class="level is-mobile" href="#直接运行"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">直接运行</span></span></a></li><li><a class="level is-mobile" href="#crashwalk"><span class="level-left"><span class="level-item">2.3</span><span class="level-item">crashwalk</span></span></a></li><li><a class="level is-mobile" href="#gdb"><span class="level-left"><span class="level-item">2.4</span><span class="level-item">gdb</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#直接运行-1"><span class="level-left"><span class="level-item">2.4.1</span><span class="level-item">直接运行</span></span></a></li><li><a class="level is-mobile" href="#查看所有调用栈"><span class="level-left"><span class="level-item">2.4.2</span><span class="level-item">查看所有调用栈</span></span></a></li></ul></li></ul></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/home/js/toc.js" defer></script></div></div></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/home/">Meow!!</a><p class="is-size-7"><span>&copy; 2023 Meow Meow Liu</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/home/js/column.js"></script><script src="/home/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/home/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "此网站使用Cookie来改善您的体验。",
+          dismiss: "知道了！",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><!--!--><!--!--><script src="/home/js/main.js" defer></script><script type="text/javascript" src="/home/js/clickClipBoard.js"></script><script type="text/javascript" src="/home/js/fairyDustCursor.js"></script><link rel="stylesheet" type="text/css" href="/home/css/textPopup.css"><script type="text/javascript" src="/home/js/textPopup.js"></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/home/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/home/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script><script src="/home/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/home/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":200,"height":400},"mobile":{"show":true}});</script></body></html>
