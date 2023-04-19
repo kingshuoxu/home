@@ -6,7 +6,7 @@
   <link href="https://jingtianer.github.io/home/atom.xml" rel="self"/>
   
   <link href="https://jingtianer.github.io/home/"/>
-  <updated>2023-04-13T17:42:48.695Z</updated>
+  <updated>2023-04-19T08:33:26.043Z</updated>
   <id>https://jingtianer.github.io/home/</id>
   
   <author>
@@ -15,6 +15,31 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>bind9crash分析</title>
+    <link href="https://jingtianer.github.io/home/2023/04/19/%E7%BB%84%E4%BC%9A/bind9crash%E5%88%86%E6%9E%90/"/>
+    <id>https://jingtianer.github.io/home/2023/04/19/%E7%BB%84%E4%BC%9A/bind9crash%E5%88%86%E6%9E%90/</id>
+    <published>2023-04-19T04:15:37.000Z</published>
+    <updated>2023-04-19T08:33:26.043Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="bind9源码阅读"><a href="#bind9源码阅读" class="headerlink" title="bind9源码阅读"></a>bind9源码阅读</h2><h3 id="loopmgr"><a href="#loopmgr" class="headerlink" title="loopmgr"></a>loopmgr</h3><ul><li>上次在gdb是发现，当运行到出错位置时，labels该小于128，设置断点到该位置，第一次运行到此处时，并没有crash。采用最原始的输出调试方法，直接运行，发现是多个线程都调用了该函数，其中某一次调用时，labels的值大于了127。</li></ul><p>named在启动时，会通过loopmgr创建包括main线程在内的n个线程，每个线程为一个loop</p><h3 id="isc-loop-t"><a href="#isc-loop-t" class="headerlink" title="isc_loop_t"></a>isc_loop_t</h3><p>loop的类型定义，其中包含与libuv交互的触发器，两个job栈，isc_job单向链表的表头</p><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">isc_joblist_t</span> setup_jobs;</span><br><span class="line"><span class="type">isc_joblist_t</span> teardown_jobs;</span><br></pre></td></tr></table></figure><h3 id="isc-job"><a href="#isc-job" class="headerlink" title="isc_job"></a>isc_job</h3><p>具体的任务，其中有一个回调函数，回调函数的参数，以及其他辅助的域</p><h3 id="named-server-create"><a href="#named-server-create" class="headerlink" title="named_server_create"></a>named_server_create</h3><p>调用链为<code>main-&gt;setup-&gt;named_server_create</code>，该函数用于创建服务，并对loopmgr进行初始化。</p><h3 id="libuv"><a href="#libuv" class="headerlink" title="libuv"></a>libuv</h3><p>libuv最初是为Node.js设计的，是一个事件驱动的异步io模型</p><p><a href="http://docs.libuv.org/en/v1.x/design.html"><img src="http://docs.libuv.org/en/v1.x/_images/architecture.png" alt="libuv架构"></a></p><p>libuv可以处理网络，文件等io，向其提供事件触发后的回调，libuv就可以在相应事件发生后调用该函数，方便程序对io的处理。</p><h3 id="isc-nm-udp-read-cb"><a href="#isc-nm-udp-read-cb" class="headerlink" title="isc__nm_udp_read_cb"></a>isc__nm_udp_read_cb</h3><p>我们崩溃的调用栈中的这个函数就是udp请求事件的回调。在前面的<code>named_server_create</code>中，会创建timer，timer每tick一下，就会通过interface_mgr把所有监听的协议都读一遍，其中之一就是<code>isc__nm_udp_read_cb</code></p>]]></content>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;bind9源码阅读&quot;&gt;&lt;a href=&quot;#bind9源码阅读&quot; class=&quot;headerlink&quot; title=&quot;bind9源码阅读&quot;&gt;&lt;/a&gt;bind9源码阅读&lt;/h2&gt;&lt;h3 id=&quot;loopmgr&quot;&gt;&lt;a href=&quot;#loopmgr&quot; class=&quot;headerlink&quot; title=&quot;loopmgr&quot;&gt;&lt;/a&gt;loopmgr&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;上次在gdb是发现，当运行到出错位置时，labels该小于128，设置断点到该位置，第一次运行到此处时，并没有crash。采用最原始的输出调试方法，直接运行，发现是多个线程都调用了该函数，其中某一次调用时，labels的值大于了127。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;named在启动时，会通过loopmgr创建包括main线程在内的n个线程，每个线程为一个loop&lt;/p&gt;
+&lt;h3 id=&quot;isc-loop-t&quot;&gt;&lt;a href=&quot;#isc-loop-t&quot; class=&quot;headerlink&quot; title=&quot;isc_loop_t&quot;&gt;&lt;/a&gt;isc_loop_t&lt;/h3&gt;&lt;p&gt;loop的类型定义，其中包含与libuv交互的触发器，两个job栈，isc_job单向链表的表头&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="组会" scheme="https://jingtianer.github.io/home/categories/%E7%BB%84%E4%BC%9A/"/>
+    
+    
+    <category term="组会" scheme="https://jingtianer.github.io/home/tags/%E7%BB%84%E4%BC%9A/"/>
+    
+  </entry>
   
   <entry>
     <title>cha9.进程凭证</title>
@@ -656,31 +681,6 @@
     
     
     <category term="LeetCode" scheme="https://jingtianer.github.io/home/tags/LeetCode/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>DNS第五周文献阅读</title>
-    <link href="https://jingtianer.github.io/home/2023/02/12/%E7%BB%84%E4%BC%9A/DNS%E7%AC%AC%E4%BA%94%E5%91%A8%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/"/>
-    <id>https://jingtianer.github.io/home/2023/02/12/%E7%BB%84%E4%BC%9A/DNS%E7%AC%AC%E4%BA%94%E5%91%A8%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/</id>
-    <published>2023-02-12T04:15:37.000Z</published>
-    <updated>2023-02-12T13:57:28.074Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="Alphuzz-Monte-Carlo-Search-on-Seed-Mutation-Tree-for-Coverage-Guided"><a href="#Alphuzz-Monte-Carlo-Search-on-Seed-Mutation-Tree-for-Coverage-Guided" class="headerlink" title="Alphuzz: Monte Carlo Search on Seed-Mutation Tree for Coverage-Guided"></a>Alphuzz: Monte Carlo Search on Seed-Mutation Tree for Coverage-Guided</h2><h3 id="abstract"><a href="#abstract" class="headerlink" title="abstract"></a>abstract</h3><p>在本研究中，我们发现种子之间的关系对于种子调度是有价值的。我们通过研究和利用种子之间的变异关系，设计并提出了一个”种子变异树”。利用”种子变异树”，我们进一步将种子调度问题建模为蒙特卡洛树搜索( MCTS )问题。即在MCTS估计的基础上，通过最优路径遍历”种子变异树”，选择下一个种子进行模糊处理。</p><h3 id="introduction"><a href="#introduction" class="headerlink" title="introduction"></a>introduction</h3><p>大量的种子调度策略被提出。一般来说，这些策略的目的是根据一定的标准为每个种子分配一个分数，然后选择分数最高的种子进行下一次的模糊迭代。例如，AFL偏好于具有最小尺寸和最短执行时间的种子。这些策略独立地对待这些种子，并没有明确地考虑种子之间的关系。</p><p>“种子变异树”的主要优点是有利于种子调度在利用式(即,反复锻炼一个高电位的种子和它的邻居)和探索式(即,尝试一个很少锻炼的种子)之间进行平衡，以获得最佳性能。如上所述，种子调度是指为探索其邻居路径而选择一条执行路径。利用种子之间的关系，我们可以进一步将每个种子对应的路径组织为一个树结构，记为执行树。</p><h3 id="论文贡献"><a href="#论文贡献" class="headerlink" title="论文贡献"></a>论文贡献</h3><ul><li>新见解。我们重点观察到种子之间的关系对于种子调度是有价值的。我们研究并利用种子变异关系来构建一个”种子变异树”，它是模糊测试执行树的近似，可以进一步帮助种子调度平衡利用和探索。</li><li>新的fuzzing技术。利用”种子变异树”，我们将种子调度问题建模为蒙特卡洛树搜索( MCTS )问题，并提出了基于MCTS的种子调度策略。由于MCTS算法的性质，该策略在利用和探索之间取得了平衡。</li></ul><h3 id="种子变异树"><a href="#种子变异树" class="headerlink" title="种子变异树"></a>种子变异树</h3><p>种子变异树被定义成一个三元组，T &#x3D; (V, E, 𝛼),V是种子，E是边，𝛼是突变关系</p><ul><li>最初，树由根节点和几个初始种子的节点构成</li><li>选择一个种子变异，生成新的测试用例。然后，将新生成的覆盖新路径的测试用例作为原始种子的子代加入到”种子变异树”中。</li><li>一些特殊的突变可能作用于两个种子。例如，AFL中剪接体的突变会将一个种子与第二个种子进行剪接，产生新的输入。在这种情况下，我们只在新节点和第一个种子对应的节点之间构造一条边，因为第一个种子是通过种子调度策略选择的，而第二个种子是随机选择的。</li></ul><h4 id="三个挑战"><a href="#三个挑战" class="headerlink" title="三个挑战"></a>三个挑战</h4><ul><li>搜索空间大且不断增大。因此，我们需要一个启发式算法来提供当前的最佳决策。</li><li>启发式算法的核心是给种子分配分数。然而，随着模糊测试对其相邻路径的探索越来越深入，种子覆盖路径的得分可能会下降。因此，在每次模糊迭代后更新树上所有种子的得分是必要的，但也是具有挑战性的。</li><li>很难平衡开发和利用。由于模糊测试本质上的随机化特性的影响，经过一次模糊测试迭代后计算出的种子评分会受到这种不确定性的影响。因此，如何在这些不确定因素下平衡开发和利用是一个挑战。</li></ul><h3 id="蒙特卡洛搜索"><a href="#蒙特卡洛搜索" class="headerlink" title="蒙特卡洛搜索"></a>蒙特卡洛搜索</h3><p>MCTS是一种通过基于随机抽样的顺序构建树进行最优决策的算法。该过程包括四个步骤：</p><ul><li>选择。MCTS采用特定的树策略，从根节点R开始，递归地选择最优的子节点，直到达到一个叶节点L。</li><li>扩张。如果L不是终端节点，则MCTS创建一个或多个子节点。进一步，从这些子节点中选择一个节点C。在这一步中，子节点指的是来自L定义的状态的任何有效移动。</li><li>仿真。通过随机选择动作来执行，直到达到一个结果或预定义的状态。</li><li>反向传播。这一步回传从新节点C传播到根节点R，更新仿真结果。</li></ul><p>树的置信上界（UCB）：UCB公式平衡了对已知奖励的利用和对相对未访问节点的探索，以获得最佳性能。</p><h4 id="基于蒙特卡洛的种子调度算法"><a href="#基于蒙特卡洛的种子调度算法" class="headerlink" title="基于蒙特卡洛的种子调度算法"></a>基于蒙特卡洛的种子调度算法</h4><p>MCTS从根节点开始，在每个层次上选择得分最高的下一个节点，直到达到一个叶节点。然后，模糊测试在监视新生成的输入的执行的同时随机变异所选的种子。由于并不是所有新生成的输入都提高了代码覆盖率，因此我们先进行仿真，只在树中添加提高代码覆盖率的输入。最后，我们在每次模糊迭代后更新种子的得分</p><h4 id="树的构建与扩展"><a href="#树的构建与扩展" class="headerlink" title="树的构建与扩展"></a>树的构建与扩展</h4><p>“种子变异树”中，一个内部节点有两种不同的角色。首先，它指的是种子。其次，从树的结构来看，它也是子树的根节点。因此，一个内部节点即使有多个子节点也可以被选为种子。<br>作为种子，分数是指选择该种子的模糊度得分。作为子树的根节点，分数指的是选择子树中每个种子的摘要模糊度得分。</p><p>为了解决这种不相容性，我们通过为每个内部节点插入一个变异节点来更新”种子变异树”。内部节点指其子树的根节点，变体指其对应的种子。这样，变体将是内部节点的一个叶子节点。对于模糊得分，内部节点指子树中每个种子的模糊得分汇总。相比之下，变体是指对应种子的模糊度评分。</p><h2 id="Not-All-Coverage-Measurements-Are-Equal-Fuzzing-by-Coverage-Accounting-for-Input-Prioritization"><a href="#Not-All-Coverage-Measurements-Are-Equal-Fuzzing-by-Coverage-Accounting-for-Input-Prioritization" class="headerlink" title="Not All Coverage Measurements Are Equal: Fuzzing by Coverage Accounting for Input Prioritization"></a>Not All Coverage Measurements Are Equal: Fuzzing by Coverage Accounting for Input Prioritization</h2><h3 id="背景知识"><a href="#背景知识" class="headerlink" title="背景知识"></a>背景知识</h3><blockquote><p>论文中提到的，以及我个人需要读懂这篇论文，需要进行补充的背景知识</p></blockquote><h4 id="taint-analysis"><a href="#taint-analysis" class="headerlink" title="taint analysis"></a>taint analysis</h4><p>污点分析可以抽象成一个三元组&lt;sources, sinks, sanitizers&gt;的形式。sources：污点源，代表直接引入不受信任的数据或者机密数据到系统中。sink：污点汇聚点，代表直接产生安全敏感操作或者泄露隐私数据到外界。sanitizer：无害处理，代表通过数据加密或者移除危害操作等手段使数据传播不再对软件系统的信息安全产生危害。</p><p>污点分析就是分析程序中由污点源引入的数据是否能够不经无害处理,而直接传播到污点汇聚点.如果不能,说明系统是信息流安全的;否则,说明系统产生了隐私数据泄露或危险数据操作等安全问题。</p><p>污点分析的处理过程可以分成 3 个阶段: (1) 识别污点源和汇聚点; (2) 污点传播分析; (3) 无害处理.</p><h4 id="符号执行"><a href="#符号执行" class="headerlink" title="符号执行"></a>符号执行</h4><ul><li><a href="https://www.jianshu.com/p/2ba973c4b0cc/">参考</a></li><li><a href="https://www.baidu.com/s?wd=SymQEMU:Compilation-based%20symbolic%20execution%20for%20binaries">参考论文–SymQEMU:Compilation-based symbolic execution for binaries</a><br>符号执行 （Symbolic Execution）是一种程序分析技术，它可以通过分析程序来得到让特定代码区域执行的输入。顾名思义，使用符号执行分析一个程序时，该程序会使用符号值作为输入，而非一般执行程序时使用的具体值。在达到目标代码时，分析器可以得到相应的路径约束，然后通过约束求解器来得到可以触发目标代码的具体值。<br>在理想模型中，程序使用的每个符号变量均应该是一个有符号整数。</li></ul><p>符号执行技术近年来大力发展，一种有效但是代价大的技术，其经常与fuzzing技术混合，并成为混合fuzzing，fuzzing用来探索容易到达的路径，而符号执行用来探索不易到达的路径。</p><p>针对符号执行技术的重要特征之一就是其是否需要提供源代码进行分析，而真实世界中的大多数程序(由于某些原因)是不提供源代码的。</p><h4 id="白盒测试（structure）"><a href="#白盒测试（structure）" class="headerlink" title="白盒测试（structure）"></a>白盒测试（structure）</h4><p>主要专注于测试系统内部的结构，因此需要尽可能的在测试中覆盖到所有必要的要素。</p><ul><li>statement coverage&#x2F;node coverage: test case要确保尽可能覆盖到所有的node（每一个操作在控制流程图(CFG)中就是一个圆角方框即node）</li><li>decision coverage&#x2F;edge coverage: test case要确保尽可能覆盖到所有的edge，（即所有的箭头）</li><li>condition coverage: 这是针对代码中测试的条件语句，每个条件要尽量cover到其所有正确或错误的结果，主要有两种写test case的方法<ul><li>simple: 针对条件语句中所有的条件，每个条件都需要至少有一个T和一个F的情况包括在内（这个情况称为满足simple condition coverage），但是仅仅是针对一个语句里的子条件，整个条件语句的结果可能不会满足一定有T和F（这种情况为满足condition coverage）。</li><li>multiple: 这种方法就是不仅要满足每个子条件有T有F还要将所有可能的子条件的组合情况给列出来</li></ul></li><li>path coverage: 在test case中需要尽量包括所有的路径（即到每一个可能终点的可能路径），值得注意的是如果没有循环才可能cover到所有的情况，即使只有一个循环也无法cover到所有的情况</li><li>loop coverage: 其实算是path coverage的一部分，其旨在测试代码中的循环。</li></ul><h4 id="anti-fuzzing-techniques"><a href="#anti-fuzzing-techniques" class="headerlink" title="anti-fuzzing techniques"></a>anti-fuzzing techniques</h4><p>反模糊化技术通过插入伪路径、在错误处理代码中添加延迟、模糊代码以减缓动态分析来欺骗模糊测试。</p><h4 id="CGF-Coverage-guided-Fuzzing"><a href="#CGF-Coverage-guided-Fuzzing" class="headerlink" title="CGF(Coverage-guided Fuzzing)"></a>CGF(Coverage-guided Fuzzing)</h4><p>fuzzing是一种自动生成和测试输入以发现软件漏洞的程序测试技术。它不需要对程序的理解，也不需要人工生成测试用例，具有灵活性，容易适用于不同的程序。</p><p>覆盖率引导的模糊测试以一个初始输入(种子)和一个目标程序作为输入，产生触发程序错误的输入作为输出。它重复选择一个输入，用输入运行目标程序，并根据当前输入及其运行结果生成新的输入。</p><h3 id="文章贡献"><a href="#文章贡献" class="headerlink" title="文章贡献"></a>文章贡献</h3><ul><li>提出了coverage accounting，输入优化的新方法</li><li>开发了TortoiseFuzz，基于coverage accounting的灰盒fuzzer</li></ul><h3 id="coverage-accounting"><a href="#coverage-accounting" class="headerlink" title="coverage accounting"></a>coverage accounting</h3><p>对edges度量，进行输入优化，通过对输入进行优先级排序，缩短发现漏洞的时间；为了抵御anti-fuzzing，不依赖于污点分析或者符号执行。</p><p>从函数调用，循环和基本块三个粒度分别对edge进行度量。</p><ul><li>函数调用：从CVE以及其子页面中爬取数据，总结出一些易于出现问题的库函数的数据表。根据这些数据表，计算一个edge目的基本块中调用这些易于出现问题的库函数的函数个数</li><li>循环：若e是back edge（回边，其头是其尾的必经结点），则为1，否则为0</li><li>基本块：目的基本块中包含内存操作的指令个数</li></ul><h3 id="TORTOISEFUZZ的设计"><a href="#TORTOISEFUZZ的设计" class="headerlink" title="TORTOISEFUZZ的设计"></a>TORTOISEFUZZ的设计</h3><p>fuzzer的设计目的是结合coverage accounting，对更容易导致脆弱代码的输入进行优先级排序，同时保证优先输入覆盖足够的代码</p><ul><li>由于内存操作是内存错误的先决条件，所以只有安全敏感的edges才是漏洞的关键，因此应该被选择的输入完全覆盖。</li><li>通过coverage accounting的计算，并设置一个域值，当超过域值时，认为是安全敏感的</li><li>在输入的选择上，输入越是命中安全敏感的edges，越有可能演化为触发漏洞</li></ul><h2 id="可疑基本块导向的定向模糊测试技术研究"><a href="#可疑基本块导向的定向模糊测试技术研究" class="headerlink" title="可疑基本块导向的定向模糊测试技术研究"></a>可疑基本块导向的定向模糊测试技术研究</h2><h3 id="核心内容"><a href="#核心内容" class="headerlink" title="核心内容"></a>核心内容</h3><ul><li>利用静态污点分析筛选出目标程序所有可疑基本块，再通过函数间控制流分析得出基本块之间的可达性，以提取可到达可疑基本块集合的所有基本块<ul><li>这篇文章分析了三种问题：缓冲区溢出、整形溢出、移位位数过大的特征，使用污点分析方法找到这些特征所在的代码块。</li></ul></li><li>将可疑基本块以及可以到达这些块的块作为插桩对象，除此之外，无法到达该可疑基本块的块则不插桩，以此降低桩代码引入的额外开销。</li><li>计算所有基本块到可疑基本块集合的距离，根据该距离赋予基本块权重，距离越小权重越大</li><li>根据种子所触发路径上各基本块的权重计算其变异后漏洞发现概率，变异时优先选择漏洞发现概率更高的种子，借此优化种子选择过程，提高模糊测试漏洞挖掘效率。</li></ul>]]></content>
-    
-    
-    <summary type="html">&lt;h2 id=&quot;Alphuzz-Monte-Carlo-Search-on-Seed-Mutation-Tree-for-Coverage-Guided&quot;&gt;&lt;a href=&quot;#Alphuzz-Monte-Carlo-Search-on-Seed-Mutation-Tree-for-Coverage-Guided&quot; class=&quot;headerlink&quot; title=&quot;Alphuzz: Monte Carlo Search on Seed-Mutation Tree for Coverage-Guided&quot;&gt;&lt;/a&gt;Alphuzz: Monte Carlo Search on Seed-Mutation Tree for Coverage-Guided&lt;/h2&gt;&lt;h3 id=&quot;abstract&quot;&gt;&lt;a href=&quot;#abstract&quot; class=&quot;headerlink&quot; title=&quot;abstract&quot;&gt;&lt;/a&gt;abstract&lt;/h3&gt;&lt;p&gt;在本研究中，我们发现种子之间的关系对于种子调度是有价值的。我们通过研究和利用种子之间的变异关系，设计并提出了一个”种子变异树”。利用”种子变异树”，我们进一步将种子调度问题建模为蒙特卡洛树搜索( MCTS )问题。即在MCTS估计的基础上，通过最优路径遍历”种子变异树”，选择下一个种子进行模糊处理。&lt;/p&gt;
-&lt;h3 id=&quot;introduction&quot;&gt;&lt;a href=&quot;#introduction&quot; class=&quot;headerlink&quot; title=&quot;introduction&quot;&gt;&lt;/a&gt;introduction&lt;/h3&gt;&lt;p&gt;大量的种子调度策略被提出。一般来说，这些策略的目的是根据一定的标准为每个种子分配一个分数，然后选择分数最高的种子进行下一次的模糊迭代。例如，AFL偏好于具有最小尺寸和最短执行时间的种子。这些策略独立地对待这些种子，并没有明确地考虑种子之间的关系。&lt;/p&gt;
-&lt;p&gt;“种子变异树”的主要优点是有利于种子调度在利用式(即,反复锻炼一个高电位的种子和它的邻居)和探索式(即,尝试一个很少锻炼的种子)之间进行平衡，以获得最佳性能。如上所述，种子调度是指为探索其邻居路径而选择一条执行路径。利用种子之间的关系，我们可以进一步将每个种子对应的路径组织为一个树结构，记为执行树。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="组会" scheme="https://jingtianer.github.io/home/categories/%E7%BB%84%E4%BC%9A/"/>
-    
-    
-    <category term="组会" scheme="https://jingtianer.github.io/home/tags/%E7%BB%84%E4%BC%9A/"/>
-    
-    <category term="文献阅读" scheme="https://jingtianer.github.io/home/tags/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/"/>
     
   </entry>
   
