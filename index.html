@@ -28,7 +28,7 @@
       switchTab();
       window.addEventListener('hashchange', switchTab, false);
   })();
-  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/home/">Meow!!</a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item is-active" href="/home/">主页</a><a class="navbar-item" href="/home/archives">归档</a><a class="navbar-item" href="/home/categories">分类</a><a class="navbar-item" href="/home/tags">标签</a><a class="navbar-item" href="/home/about">关于我</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/"><i class="fab fa-github"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-8-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2023-05-21T04:15:37.000Z" title="5/21/2023, 12:15:37 PM">2023-05-21</time>发表</span><span class="level-item"><time dateTime="2023-05-21T13:49:36.997Z" title="5/21/2023, 9:49:36 PM">2023-05-21</time>更新</span><span class="level-item"><a class="link-muted" href="/home/categories/%E7%BB%84%E4%BC%9A/">组会</a></span><span class="level-item">4 分钟读完 (大约573个字)</span></div></div><h1 class="title is-3 is-size-4-mobile"><a class="link-muted" href="/home/2023/05/21/%E7%BB%84%E4%BC%9A/%E5%85%B6%E4%BB%96%E6%96%B9%E6%B3%95/">其他漏洞挖掘方法</a></h1><div class="content"><h2 id="静态代码扫描"><a href="#静态代码扫描" class="headerlink" title="静态代码扫描"></a>静态代码扫描</h2><p>逻辑漏洞挖掘主要依靠手工代码审计来发现,也有一些工具可以辅助检测。常用的逻辑漏洞挖掘工具有:</p>
+  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/home/">Meow!!</a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item is-active" href="/home/">主页</a><a class="navbar-item" href="/home/archives">归档</a><a class="navbar-item" href="/home/categories">分类</a><a class="navbar-item" href="/home/tags">标签</a><a class="navbar-item" href="/home/about">关于我</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/"><i class="fab fa-github"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-8-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2023-05-21T04:15:37.000Z" title="5/21/2023, 12:15:37 PM">2023-05-21</time>发表</span><span class="level-item"><time dateTime="2023-05-22T02:28:33.842Z" title="5/22/2023, 10:28:33 AM">2023-05-22</time>更新</span><span class="level-item"><a class="link-muted" href="/home/categories/%E7%BB%84%E4%BC%9A/">组会</a></span><span class="level-item">8 分钟读完 (大约1126个字)</span></div></div><h1 class="title is-3 is-size-4-mobile"><a class="link-muted" href="/home/2023/05/21/%E7%BB%84%E4%BC%9A/%E5%85%B6%E4%BB%96%E6%96%B9%E6%B3%95/">其他漏洞挖掘方法</a></h1><div class="content"><h2 id="静态代码扫描"><a href="#静态代码扫描" class="headerlink" title="静态代码扫描"></a>静态代码扫描</h2><p>逻辑漏洞挖掘主要依靠手工代码审计来发现,也有一些工具可以辅助检测。常用的逻辑漏洞挖掘工具有:</p>
 <ol>
 <li><p>Flawfinder - 源码安全审计工具,可以检测缓冲区溢出、格式字符串漏洞、SQL注入、命令执行等逻辑漏洞。<br>Flawfinder是一款开源的关于C&#x2F;C++静态扫描分析工具，其根据内部字典数据库进行静态搜索，匹配简单的缺陷与漏洞，flawfinder工具不需要编译C&#x2F;C++代码，可以直接进行扫描分析。简单快速，最大的有点就是免费，不需要编译。flawfinder工具可以在官网进行下载。</p>
 </li>
@@ -52,7 +52,111 @@
 <li><p>CodeScan - 乐鑫IoT出品的源代码安全审计工具,支持C&#x2F;C++,可以检测资源泄漏、格式字符串漏洞、缓冲区溢出等逻辑漏洞,专注嵌入式系统安全。</p>
 </li>
 </ol>
-</div></article></div><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2023-05-20T10:05:00.000Z" title="5/20/2023, 6:05:00 PM">2023-05-20</time>发表</span><span class="level-item"><time dateTime="2023-05-21T12:48:24.277Z" title="5/21/2023, 8:48:24 PM">2023-05-21</time>更新</span><span class="level-item"><a class="link-muted" href="/home/categories/linux/">linux</a></span><span class="level-item">5 分钟读完 (大约773个字)</span></div></div><h1 class="title is-3 is-size-4-mobile"><a class="link-muted" href="/home/2023/05/20/linux/Linux-UNIX%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C/cha18/">cha18.目录与链接</a></h1><div class="content"><h2 id="18-1"><a href="#18-1" class="headerlink" title="18.1"></a>18.1</h2><p>4.3.2节曾指出，如果一个文件正处于执行状态，那么要将其打开以执行写操作是不可能的(open)调用返回-1，且将errno置为ETXTBSY。然而，在 shell 中执行如下操作却是可能的:</p>
+<h2 id="Flawfinder的使用"><a href="#Flawfinder的使用" class="headerlink" title="Flawfinder的使用"></a>Flawfinder的使用</h2><p>对bind最新源码进行扫描，得到输出，经过分析整理，得到</p>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>问题</th>
+<th>建议</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>access</td>
+<td>在对文件的访问和真正使用之间对文件权限进行修改</td>
+<td>正确设置文件的权限，如setuid，直接打开文件</td>
+</tr>
+<tr>
+<td>atoi</td>
+<td>如果没有检查字符串，可能溢出</td>
+<td>检查字符串</td>
+</tr>
+<tr>
+<td>char[]</td>
+<td>静态长度的数组可能导致越界</td>
+<td>检查越界、保证最大可能长度不会超过数组长度</td>
+</tr>
+<tr>
+<td>chmod chown</td>
+<td>依赖文件路径，在调用前移动文件</td>
+<td>使用<code>fchmod</code> <code>fchown</code></td>
+</tr>
+<tr>
+<td>chroot</td>
+<td>在不同系统的具体实现不同，某些系统下需要在调用后立刻调用<code>chdir(&quot;/&quot;)</code></td>
+<td>调用后立刻调用<code>chdir(&quot;/&quot;)</code></td>
+</tr>
+<tr>
+<td>equal mismatch</td>
+<td>误报，只是一个变量，被判断为c++的std::equal函数</td>
+<td>-</td>
+</tr>
+<tr>
+<td>fgetc getc</td>
+<td>误报：检查是否有可能的buffer越界，代码这里实际上根本没有buffer</td>
+<td></td>
+</tr>
+<tr>
+<td>fopen open</td>
+<td>攻击者可能创建软连接，使程序打开其他文件</td>
+<td>-</td>
+</tr>
+<tr>
+<td>fprintf printf snprintf vfprintf vprintf vsnprintf</td>
+<td>攻击者可能改变格式化字符串</td>
+<td>使用常量作为格式化字符串</td>
+</tr>
+<tr>
+<td>fscanf scanf sscanf</td>
+<td>%s所控制的长度不确定</td>
+<td>使用其他输入函数，或保证%s输入的字符串足够小</td>
+</tr>
+<tr>
+<td>getenv</td>
+<td>环境变量被攻击者修改，修改后内容、长度都不确定</td>
+<td>检查环境变量</td>
+</tr>
+<tr>
+<td>getopt getopt_long</td>
+<td>老版本的实现不会检查溢出</td>
+<td>安装时检查其实现、限制输入长度</td>
+</tr>
+<tr>
+<td>gets sprintf</td>
+<td>可能越界</td>
+<td>使用fgets snprintf</td>
+</tr>
+<tr>
+<td>memcpy read strcat strcpy</td>
+<td>越界</td>
+<td>保证buffer足够大，使用对应限制长度的函数</td>
+</tr>
+<tr>
+<td>random srand srandom</td>
+<td>不够安全，没有nonce</td>
+<td>使用更安全的方法</td>
+</tr>
+<tr>
+<td>strlen strncpy</td>
+<td>检查不以’\0’结尾的字符串</td>
+<td></td>
+</tr>
+<tr>
+<td>strncat strncpy</td>
+<td>容易用错</td>
+<td>使用strcat_s, strlcat, snprintf</td>
+</tr>
+<tr>
+<td>tmpfile</td>
+<td>某些老系统上不安全</td>
+<td></td>
+</tr>
+<tr>
+<td>usleep</td>
+<td>与<code>SIGALRM</code>和其他timer相互影响</td>
+<td>Use nanosleep(2) or setitimer(2) instead.</td>
+</tr>
+</tbody></table></div><a class="article-more button is-small is-size-7" href="/home/2023/05/21/%E7%BB%84%E4%BC%9A/%E5%85%B6%E4%BB%96%E6%96%B9%E6%B3%95/#more">阅读更多</a></article></div><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2023-05-20T10:05:00.000Z" title="5/20/2023, 6:05:00 PM">2023-05-20</time>发表</span><span class="level-item"><time dateTime="2023-05-22T01:22:09.007Z" title="5/22/2023, 9:22:09 AM">2023-05-22</time>更新</span><span class="level-item"><a class="link-muted" href="/home/categories/linux/">linux</a></span><span class="level-item">5 分钟读完 (大约823个字)</span></div></div><h1 class="title is-3 is-size-4-mobile"><a class="link-muted" href="/home/2023/05/20/linux/Linux-UNIX%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C/cha18/">cha18.目录与链接</a></h1><div class="content"><h2 id="18-1"><a href="#18-1" class="headerlink" title="18.1"></a>18.1</h2><p>4.3.2节曾指出，如果一个文件正处于执行状态，那么要将其打开以执行写操作是不可能的(open)调用返回-1，且将errno置为ETXTBSY。然而，在 shell 中执行如下操作却是可能的:</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">gcc -o longrunner longrunner.c$ ./longrunner &amp;</span><br><span class="line"><span class="comment"># Leave running in background</span></span><br><span class="line">vi longrunner.c</span><br><span class="line"><span class="comment"># Make some changes to the source code</span></span><br><span class="line">gcc -o longrunner longrunner.c</span><br></pre></td></tr></table></figure>
 <p>最后一条命令覆盖了现有的同名可执行文件。原因何在?(提示:在每次编译后调用ls -li命令来查看可执行文件的i-node编号。)</p>
 <h3 id="解释"><a href="#解释" class="headerlink" title="解释"></a>解释</h3><p>变异前后使用<code>ls -li</code>，inode确实变了。猜测<code>-o</code>参数会令编译程序将临时文件<code>rename</code>为对应名称，rename若<code>newpath</code>存在，则会覆盖。</p></div><a class="article-more button is-small is-size-7" href="/home/2023/05/20/linux/Linux-UNIX%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C/cha18/#more">阅读更多</a></article></div><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2023-05-16T10:05:00.000Z" title="5/16/2023, 6:05:00 PM">2023-05-16</time>发表</span><span class="level-item"><time dateTime="2023-05-18T07:39:51.639Z" title="5/18/2023, 3:39:51 PM">2023-05-18</time>更新</span><span class="level-item"><a class="link-muted" href="/home/categories/linux/">linux</a></span><span class="level-item">19 分钟读完 (大约2784个字)</span></div></div><h1 class="title is-3 is-size-4-mobile"><a class="link-muted" href="/home/2023/05/16/linux/Linux-UNIX%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C/cha15/">cha15.文件属性</a></h1><div class="content"><h2 id="15-1"><a href="#15-1" class="headerlink" title="15.1"></a>15.1</h2><blockquote>
