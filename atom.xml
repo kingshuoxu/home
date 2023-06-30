@@ -6,7 +6,7 @@
   <link href="https://jingtianer.github.io/home/atom.xml" rel="self"/>
   
   <link href="https://jingtianer.github.io/home/"/>
-  <updated>2023-06-30T06:58:33.176Z</updated>
+  <updated>2023-06-30T07:00:56.146Z</updated>
   <id>https://jingtianer.github.io/home/</id>
   
   <author>
@@ -17,11 +17,11 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>cha31.线程安全和每线程存储</title>
+    <title>cha32.线程取消</title>
     <link href="https://jingtianer.github.io/home/2023/06/29/linux/Linux-UNIX%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C/cha32/"/>
     <id>https://jingtianer.github.io/home/2023/06/29/linux/Linux-UNIX%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C/cha32/</id>
     <published>2023-06-29T12:05:00.000Z</published>
-    <updated>2023-06-30T06:58:33.176Z</updated>
+    <updated>2023-06-30T07:00:56.146Z</updated>
     
     <content type="html"><![CDATA[<h2 id="读书笔记"><a href="#读书笔记" class="headerlink" title="读书笔记"></a>读书笔记</h2><h3 id="带参宏"><a href="#带参宏" class="headerlink" title="带参宏"></a>带参宏</h3><p>从作用域的角度上看，带参宏和函数的区别：</p><ul><li>函数有新的函数栈，而带参宏没有，因而带参宏在不同作用域调用时，会受到作用域的影响。如在宏A中的定义的变量，也会影响后续。</li><li>如果一对作用相反的带参宏，如本节的<code>pthread_cleanup_push</code>和<code>pthread_cleanup_pop</code>，很多实现都是使用带参宏，那么这两个宏调用时必须属于同一个代码块<blockquote><p>?，保证push的作用域包含pop不就好了吗</p></blockquote></li></ul><h3 id="线程取消"><a href="#线程取消" class="headerlink" title="线程取消"></a>线程取消</h3><p>线程取消状态可设置为启用和禁用。</p><ul><li>若启用，则可以取消，但何时响应未知，依赖于取消类型</li><li>若禁用，将取消请求挂起，直到允许取消</li></ul><p>线程取消类型</p><ul><li><p>延迟取消，直到取消点（某些特定的系统调用或库函数，如cond_wait等</p></li><li><p>异步取消，随时都可以取消</p><ul><li>包括malloc，free执行过程中，若在这些函数中取消，则很有可能会导致后续内存分配的过程出现错误。</li><li>异步取消线程不应该分配资源，（那么是否可以在分配，释放内存时暂时禁止取消，或在计算密集任务开始时设置为异步，结束后恢复？）</li><li>适用于计算密集型，长时间没有取消点的情况。</li></ul></li><li><p>可以手动产生取消点<code>pthread_testcancel()</code>，若调用前已经有了取消请求，则线程会终止</p></li></ul>]]></content>
     
